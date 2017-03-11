@@ -142,32 +142,6 @@ function updatePallet(){
 updatePallet();
 
 
-
-function putPixel(x, y, pallete, palleteColor, imageData) {
-    var canvasImageOffset = (x  + imageData.width * y) * 4;
-    var color = pallete[palleteColor];
-    imageData.data[canvasImageOffset + 0] = color.r;
-    imageData.data[canvasImageOffset + 1] = color.g;
-    imageData.data[canvasImageOffset + 2] = color.b;
-}
-
-function getPixel(x, y, imageData) {
-    var canvasImageOffset = (x  + imageData.width * y) * 4;
-    var color = {
-        r: imageData.data[canvasImageOffset + 0],
-        g: imageData.data[canvasImageOffset + 1],
-        b: imageData.data[canvasImageOffset + 2]
-    };
-
-    if(!color){
-        throw new Error("Invalid pixel (" + x + ", " + y + ")");
-    }
-
-    return color;
-}
-
-
-
 function getXY(evt){
     var x = Math.floor((evt.x - evt.target.offsetLeft) / scale);
     var y = Math.floor((evt.y - evt.target.offsetTop) / scale);
@@ -201,12 +175,60 @@ function handleDrawTool(evt){
     paintCanvas();
 }
 
+/// Drawing utilities
+
+function putPixel(x, y, pallete, palleteColor, imageData) {
+    var canvasImageOffset = (x  + imageData.width * y) * 4;
+    var color = pallete[palleteColor];
+    imageData.data[canvasImageOffset + 0] = color.r;
+    imageData.data[canvasImageOffset + 1] = color.g;
+    imageData.data[canvasImageOffset + 2] = color.b;
+}
+
+function getPixel(x, y, imageData) {
+    var canvasImageOffset = (x  + imageData.width * y) * 4;
+    var color = {
+        r: imageData.data[canvasImageOffset + 0],
+        g: imageData.data[canvasImageOffset + 1],
+        b: imageData.data[canvasImageOffset + 2]
+    };
+
+    if(!color){
+        throw new Error("Invalid pixel (" + x + ", " + y + ")");
+    }
+
+    return color;
+}
+
 function paintCanvas(){
     spriteCtx.putImageData(imageData, 0, 0);
     ctx.drawImage(spriteCanvas, 0, 0, width * scale, height * scale);
 }
 
+
+function rgbColorToPalleteTuple(color, pallete) {
+    if(!color){
+        throw new Error("Invalid color for current pallete! - " + colorKey(color));
+    }
+    function colorKey(color){
+        return color.r + '+'+ color.g + '+' + color.b;
+    }
+    var palleteHash = {};
+    palleteHash[colorKey(pallete.background)] = [0x0, 0x0];
+    palleteHash[colorKey(pallete.color1)] = [0x1, 0x0];
+    palleteHash[colorKey(pallete.color2)] = [0x0, 0x1];
+    palleteHash[colorKey(pallete.color3)] = [0x1, 0x1];
+
+    var result = palleteHash[colorKey(color)];
+    
+    return result;
+}
+
+/// Translate raw NES binary to a canvas
+
 function NEStoCanvas(byteArray){
+    var xpos = 0;
+    var ypos = 0;
     // every sprite is 16 bytes
     // 1 byte is 8 pixels 
     // byte n and byte n+8 control the color of that pixel
@@ -236,25 +258,7 @@ function NEStoCanvas(byteArray){
     paintCanvas();
 }
 
-
-
-function rgbColorToPalleteTuple(color, pallete) {
-    if(!color){
-        throw new Error("Invalid color for current pallete! - " + colorKey(color));
-    }
-    function colorKey(color){
-        return color.r + '+'+ color.g + '+' + color.b;
-    }
-    var palleteHash = {};
-    palleteHash[colorKey(pallete.background)] = [0x0, 0x0];
-    palleteHash[colorKey(pallete.color1)] = [0x1, 0x0];
-    palleteHash[colorKey(pallete.color2)] = [0x0, 0x1];
-    palleteHash[colorKey(pallete.color3)] = [0x1, 0x1];
-
-    var result = palleteHash[colorKey(color)];
-    
-    return result;
-}
+/// Translate raw canvas pixles to NES Binary
 
 function canvasToNES(imageData){
     // move 16 byte sprite and 512 sprites
@@ -296,7 +300,7 @@ function canvasToNES(imageData){
                 byteChannel1 = (byteChannel1 << 1 | tup[0]);
                 byteChannel2 = (byteChannel2 << 1 | tup[1]);
             }
-            // write row
+            // write calc'd row channels to appropriate byte locations
             byteArray[i] = byteChannel1;
             byteArray[i+8] = byteChannel2
             i++;
@@ -305,16 +309,11 @@ function canvasToNES(imageData){
         xtotal = (xtotal + 8) % width;
     }
 
-    
-
-    // convert to a blob
-    var blob = new Blob([byteArray], {type: 'octect/stream'});
-    var url = window.URL.createObjectURL(blob);
     return byteArray;
 }
 
-var xpos = 0;
-var ypos = 0;
+
+/// Load up sprite sheet
 
 var xhr = new XMLHttpRequest();
 xhr.open('GET', 'test.chr')
@@ -322,7 +321,6 @@ xhr.responseType = 'arraybuffer';
 
 xhr.addEventListener('load', function(evt){
     spriteRomData = new Uint8Array(xhr.response);
-
     NEStoCanvas(spriteRomData);
 });
 
