@@ -66,14 +66,15 @@ var selectedPallete = 'background';
 var selectedColor = null;
 var selectedNes = null;
 
-var showGridLines = false;
+var showGridLines = true;
 
 var elements = document.getElementsByClassName('selectable');
 
-document.getElementById('grid').addEventListener('click', toggleGrid);
+document.getElementById('grid').addEventListener('change', toggleGrid);
 
-function toggleGrid(){
+function toggleGrid(evt){
     showGridLines = !showGridLines;
+    paintCanvas();
 }
 
 var downloadNes = document.getElementById('nes')
@@ -181,18 +182,30 @@ function getXY(evt){
 
 document.getElementById('editor').addEventListener('mousemove', function(evt){
     var coords = getXY(evt);
-    document.getElementById('coord').innerText = '(' + coords.x + ', ' + coords.y + ')';
+    document.getElementById('coord').innerText = 'Pixel (' + coords.x + ', ' + coords.y + ')';
+
+    var ycoord = Math.floor((coords.y/8)) * 16;
+    var tile = Math.floor((coords.x) / 8 + ycoord).toString(16).toUpperCase();
+    if(tile.length < 2){
+        tile = '0' + tile;
+    }
+
+    document.getElementById('tile').innerText = 'Tile $' + tile;
     if(_isMouseDown){
         handleDrawTool(evt);
     }
+    paintCanvas();
+    drawCurrentPixelSelected(coords.x, coords.y);
+    
 });
 document.getElementById('editor').addEventListener('mousedown', down)
 document.getElementById('editor').addEventListener('mouseup', up)
 var _isMouseDown = false;
-function down(){
+function down(evt){
     _isMouseDown = true;
+    handleDrawTool(evt);
 }
-function up() {
+function up(evt) {
     _isMouseDown = false;
     
 }
@@ -228,9 +241,54 @@ function getPixel(x, y, imageData) {
     return color;
 }
 
+function drawSpriteBorderGridLines(){
+
+    var sWidth = canvas.width / 16;
+    var sHeight = canvas.height / 32;
+    
+    //ctx.save();
+    ctx.fillStyle = 'white';
+    ctx.strokeStyle = 'white';
+    ctx.lineWidth = 2;
+    ctx.setLineDash([4, 4]);
+    ctx.lineDashOffset = 2;
+    for(var x = 0; x < 15; x++){
+        ctx.beginPath()
+        ctx.moveTo(x * sWidth + sWidth, 0);
+        ctx.lineTo(x * sWidth + sWidth, canvas.height);
+        ctx.stroke();
+    }
+    for(var y = 0; y < 31; y++){
+        ctx.beginPath();
+        ctx.moveTo(0, y * sHeight + sHeight)
+        ctx.lineTo(canvas.width, y * sHeight + sHeight)
+        ctx.stroke();
+    }
+    
+    //ctx.restore();
+}
+
+function drawCurrentPixelSelected(x, y){
+    var pWidth = canvas.width / 128;
+    var pHeight = canvas.height / 256;
+
+
+    ctx.fillStyle = 'white';
+    ctx.strokeStyle = 'white';
+    ctx.lineWidth = 2;
+    ctx.setLineDash([4, 4]);
+    ctx.lineDashOffset = 2;
+    ctx.beginPath()
+    ctx.strokeRect(x * scale, y * scale, pWidth, pHeight);
+    ctx.stroke();
+}
+
 function paintCanvas(){
     spriteCtx.putImageData(imageData, 0, 0);
     ctx.drawImage(spriteCanvas, 0, 0, width * scale, height * scale);
+    if(showGridLines){
+        drawSpriteBorderGridLines();
+    }
 }
 
 
