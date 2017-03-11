@@ -105,8 +105,11 @@ var grid = document.getElementById('grid');
 grid.addEventListener('change', toggleGrid);
 
 for(var el of elements){
-    el.addEventListener('mouseup', function(evt){
-        if(evt.target.dataset.pallete){
+    el.addEventListener('mouseup', handlePalleteChange);
+}
+
+function handlePalleteChange(evt){
+    if(evt.target.dataset.pallete){
             selectedPallete = evt.target.dataset.pallete;
             
         }
@@ -133,10 +136,27 @@ for(var el of elements){
             selectedNes = null;
         }
         updatePallet();
-        //spriteRomData = canvasToNES(imageData);
-        //evt.target.style.border = 'blue'
-    });
 }
+
+// Handle hotkeys
+window.addEventListener('keydown', function(evt){
+    if(evt.keyCode == 49){
+        selectedPallete = 'background'
+    }
+
+    if(evt.keyCode == 50){
+        selectedPallete = 'color1'
+    }
+
+    if(evt.keyCode == 51){
+        selectedPallete = 'color2'
+    }
+    
+    if(evt.keyCode == 52){
+        selectedPallete = 'color3'
+    }
+    updatePallet();
+});
 
 function setElementColor(elementId, r, g, b){
     document.getElementById(elementId).style.backgroundColor = 'rgb('+r+','+g+','+b+')';
