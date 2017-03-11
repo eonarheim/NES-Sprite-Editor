@@ -1,0 +1,141 @@
+<!doctype html>
+<html>
+    <head>
+        <link rel="stylesheet" href="main.css">
+    </head>
+    <body>
+        <canvas id="editor"></canvas>
+        <div class="right-panel">
+            <div id="info">
+                <span id="coord"> (x, y) </span> <span> tile </span>
+            </div>
+            <div id="pallete">
+                <div id="brush" class="color">BRUSH</div>
+                <div id="pallete-current">
+                    <div id="background" class="color selectable" data-pallete="background"> BKG </div>
+                    <div id="color1" class="color selectable" data-pallete="color1"> CL1 </div>
+                    <div id="color2" class="color selectable" data-pallete="color2"> CL2 </div>
+                    <div id="color3" class="color selectable" data-pallete="color3"> CL3 </div>
+                </div>
+                <table border="1" cellpadding="5">
+                <tbody class="pallete-selection" class="selectable">
+                    <tr>
+                    <td>NES Colors</a></td>
+                    <td>0</td>
+                    <td>1</td>
+                    <td>2</td>
+                    <td>3</td>
+                    <td>4</td>
+                    <td>5</td>
+                    <td>6</td>
+                    <td>7</td>
+                    <td>8</td>
+                    <td>9</td>
+                    <td>A</td>
+                    <td>B</td>
+                    <td>C</td>
+                    <td>D</td>
+                    <td>E</td>
+                    <td>F</td>
+                    </tr>
+                    <tr>
+                    <td>$0</td>
+                    <td data-nes="0x00" class="selectable" style="color:white; background:rgb(124,124,124);"></td>
+                    <td data-nes="0x01" class="selectable" style="color:white; background:rgb(0,0,252);"></td>
+                    <td data-nes="0x02" class="selectable" style="color:white; background:rgb(0,0,188);"></td>
+                    <td data-nes="0x03" class="selectable" style="color:white; background:rgb(68,40,188);"></td>
+                    <td data-nes="0x04" class="selectable" style="color:white; background:rgb(148,0,132);"></td>
+                    <td data-nes="0x05" class="selectable" style="color:white; background:rgb(168,0,32);"></td>
+                    <td data-nes="0x06" class="selectable" style="color:white; background:rgb(168,16,0);"></td>
+                    <td data-nes="0x07" class="selectable" style="color:white; background:rgb(136,20,0);"></td>
+                    <td data-nes="0x08" class="selectable" style="color:white; background:rgb(80,48,0);"></td>
+                    <td data-nes="0x09" class="selectable" style="color:white; background:rgb(0,120,0);"></td>
+                    <td data-nes="0x0A" class="selectable" style="color:white; background:rgb(0,104,0);"></td>
+                    <td data-nes="0x0B" class="selectable" style="color:white; background:rgb(0,88,0);"></td>
+                    <td data-nes="0x0C" class="selectable" style="color:white; background:rgb(0,64,88);"></td>
+                    <td data-nes="0x0D" class="selectable" style="color:white; background:rgb(0,0,0);"></td>
+                    <td data-nes="0x0E" class="selectable" style="color:white; background:rgb(0,0,0);"></td>
+                    <td data-nes="0x0F" class="selectable" style="color:white; background:rgb(0,0,0);"></td>
+                    </tr>
+                    <tr>
+                    <td>$1</td>
+                    <td data-nes="0x10" class="selectable" style="color:white; background:rgb(188,188,188);"></td>
+                    <td data-nes="0x11" class="selectable" style="color:white; background:rgb(0,120,248);"></td>
+                    <td data-nes="0x12" class="selectable" style="color:white; background:rgb(0,88,248);"></td>
+                    <td data-nes="0x13" class="selectable" style="color:white; background:rgb(104,68,252);"></td>
+                    <td data-nes="0x14" class="selectable" style="color:white; background:rgb(216,0,204);"></td>
+                    <td data-nes="0x15" class="selectable" style="color:white; background:rgb(228,0,88);"></td>
+                    <td data-nes="0x16" class="selectable" style="color:white; background:rgb(248,56,0);"></td>
+                    <td data-nes="0x17" class="selectable" style="color:white; background:rgb(228,92,16);"></td>
+                    <td data-nes="0x18" class="selectable" style="color:white; background:rgb(172,124,0);"></td>
+                    <td data-nes="0x19" class="selectable" style="color:white; background:rgb(0,184,0);"></td>
+                    <td data-nes="0x1A" class="selectable" style="color:white; background:rgb(0,168,0);"></td>
+                    <td data-nes="0x1B" class="selectable" style="color:white; background:rgb(0,168,68);"></td>
+                    <td data-nes="0x1C" class="selectable" style="color:white; background:rgb(0,136,136);"></td>
+                    <td data-nes="0x1D" class="selectable" style="color:white; background:rgb(0,0,0);"></td>
+                    <td data-nes="0x1E" class="selectable" style="color:white; background:rgb(0,0,0);"></td>
+                    <td data-nes="0x1F" class="selectable" style="color:white; background:rgb(0,0,0);"></td>
+                    </tr>
+                    <tr>
+                    <td>$2</td>
+                    <td data-nes="0x20" class="selectable" style="color:white; background:rgb(248,248,248);"></td>
+                    <td data-nes="0x21" class="selectable" style="color:white; background:rgb(60,188,252);"></td>
+                    <td data-nes="0x22" class="selectable" style="color:white; background:rgb(104,136,252);"></td>
+                    <td data-nes="0x23" class="selectable" style="color:white; background:rgb(152,120,248);"></td>
+                    <td data-nes="0x24" class="selectable" style="color:white; background:rgb(248,120,248);"></td>
+                    <td data-nes="0x25" class="selectable" style="color:white; background:rgb(248,88,152);"></td>
+                    <td data-nes="0x26" class="selectable" style="color:white; background:rgb(248,120,88);"></td>
+                    <td data-nes="0x27" class="selectable" style="color:white; background:rgb(252,160,68);"></td>
+                    <td data-nes="0x28" class="selectable" style="color:white; background:rgb(248,184,0);"></td>
+                    <td data-nes="0x29" class="selectable" style="color:white; background:rgb(184,248,24);"></td>
+                    <td data-nes="0x2A" class="selectable" style="color:white; background:rgb(88,216,84);"></td>
+                    <td data-nes="0x2B" class="selectable" style="color:white; background:rgb(88,248,152);"></td>
+                    <td data-nes="0x2C" class="selectable" style="color:white; background:rgb(0,232,216);"></td>
+                    <td data-nes="0x2D" class="selectable" style="color:white; background:rgb(120,120,120);"></td>
+                    <td data-nes="0x2E" class="selectable" style="color:white; background:rgb(0,0,0);"></td>
+                    <td data-nes="0x2F" class="selectable" style="color:white; background:rgb(0,0,0);"></td>
+                    </tr>
+                    <tr>
+                    <td>$3</td>
+                    <td data-nes="0x30" class="selectable" style="color:white; background:rgb(252,252,252);"></td>
+                    <td data-nes="0x31" class="selectable" style="color:white; background:rgb(164,228,252);"></td>
+                    <td data-nes="0x32" class="selectable" style="color:white; background:rgb(184,184,248);"></td>
+                    <td data-nes="0x33" class="selectable" style="color:white; background:rgb(216,184,248);"></td>
+                    <td data-nes="0x34" class="selectable" style="color:white; background:rgb(248,184,248);"></td>
+                    <td data-nes="0x35" class="selectable" style="color:white; background:rgb(248,164,192);"></td>
+                    <td data-nes="0x36" class="selectable" style="color:white; background:rgb(240,208,176);"></td>
+                    <td data-nes="0x37" class="selectable" style="color:white; background:rgb(252,224,168);"></td>
+                    <td data-nes="0x38" class="selectable" style="color:white; background:rgb(248,216,120);"></td>
+                    <td data-nes="0x39" class="selectable" style="color:white; background:rgb(216,248,120);"></td>
+                    <td data-nes="0x3A" class="selectable" style="color:white; background:rgb(184,248,184);"></td>
+                    <td data-nes="0x3B" class="selectable" style="color:white; background:rgb(184,248,216);"></td>
+                    <td data-nes="0x3C" class="selectable" style="color:white; background:rgb(0,252,252);"></td>
+                    <td data-nes="0x3D" class="selectable" style="color:white; background:rgb(216,216,216);"></td>
+                    <td data-nes="0x3E" class="selectable" style="color:white; background:rgb(0,0,0);"></td>
+                    <td data-nes="0x3F" class="selectable" style="color:white; background:rgb(0,0,0);"></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+            <input id="grid" type="checkbox">Show grid lines</input>
+            <hr>
+            <button id="nes">Save NES</button>
+            <button id="image">Save PNG</button>
+            <button id="new">New sprite sheet</button>
+            <button id="upload">Upload sprite sheet</button>
+            <hr>
+            <pre>
+                $3F00	Universal background color
+                $3F01-$3F03	Background palette 0
+                $3F05-$3F07	Background palette 1
+                $3F09-$3F0B	Background palette 2
+                $3F0D-$3F0F	Background palette 3
+                $3F11-$3F13	Sprite palette 0
+                $3F15-$3F17	Sprite palette 1
+                $3F19-$3F1B	Sprite palette 2
+                $3F1D-$3F1F	Sprite palette 3
+            </pre>
+        </div>
+        <script src="main.js"></script>
+    </body>
+</html>

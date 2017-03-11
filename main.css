@@ -1,0 +1,47 @@
+#editor {
+    margin: 20px;
+    cursor: url(pencil.png), crosshair;
+}
+
+.right-panel {
+    position: fixed;
+    top: 25px;
+    right: 25px;
+    margin: 20px;
+    padding: 30px;
+    border-style: solid;
+    border-radius: 5px;
+    max-width: 500px;
+    margin: auto;
+}
+
+#info {
+    padding: 10px;
+    border-style: solid;
+    border: black;
+    border-radius: 5px;
+}
+
+.pallete-picker {
+    
+}
+
+#brush {
+    width: 50px;
+}
+
+.color {    
+    padding: 10px;
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: 10px;
+    display: inline-block;
+    width: 30px;
+    height: 30px;
+    border: black;
+    border-radius: 5px;
+    border-style: solid;
+    vertical-align: middle;
+    color: white;
+}
