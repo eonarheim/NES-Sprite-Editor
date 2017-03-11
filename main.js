@@ -1,4 +1,5 @@
 
+// Canvas bootstrapping
 
 var canvas = document.getElementById('editor');
 var spriteRomData = null;
@@ -27,7 +28,7 @@ spriteCtx.imageSmoothingEnabled = false;
 var imageData = ctx.getImageData(0, 0, spriteCanvas.width, spriteCanvas.height);//ctx.getImageData(0, 0, canvas.width, canvas.height);
 var data = imageData.data;
 
-
+// Editor data 
 
 var mapping = ['background', 'color1', 'color2', 'color3']
 
@@ -65,12 +66,39 @@ var selectedPallete = 'background';
 var selectedColor = null;
 var selectedNes = null;
 
+var showGridLines = false;
+
 var elements = document.getElementsByClassName('selectable');
 
+document.getElementById('grid').addEventListener('click', toggleGrid);
 
 function toggleGrid(){
-    alert('todo');
+    showGridLines = !showGridLines;
 }
+
+var downloadNes = document.getElementById('nes')
+downloadNes.addEventListener('click', function(){
+    var name = document.getElementById('nesfilename').value;
+    spriteRomData = canvasToNES(imageData);
+    download(name || 'sprite.chr', spriteRomData, 'octect/stream');
+});
+
+var uploadNes = document.getElementById('load')
+uploadNes.addEventListener('click', function(){
+    readBlob()
+}, false);
+
+var newSheet = document.getElementById('new');
+newSheet.addEventListener('click', function(){
+    spriteRomData = new Uint8Array(512*16);
+    NEStoCanvas(spriteRomData);
+});
+
+var savePng = document.getElementById('image');
+savePng.addEventListener('click', function(){
+    var image = canvas.toDataURL("image/png");
+    download(name || 'sprite.png', image, 'image/png');
+});
 
 var grid = document.getElementById('grid');
 grid.addEventListener('change', toggleGrid);
@@ -313,7 +341,62 @@ function canvasToNES(imageData){
 }
 
 
-/// Load up sprite sheet
+/// Download utilities
+
+function download(filename, byteArray, type) {
+    // convert to a blob
+    var blob = new Blob([byteArray], {type: type});
+    if(type == 'octect/stream'){
+        var url = window.URL.createObjectURL(blob);
+    } else {
+        var url = byteArray;
+    }
+
+    var pom = document.createElement('a');
+    pom.setAttribute('href', url);
+    pom.setAttribute('download', filename);
+
+    if (document.createEvent) {
+        var event = document.createEvent('MouseEvents');
+        event.initEvent('click', true, true);
+        pom.dispatchEvent(event);
+    }
+    else {
+        pom.click();
+    }
+}
+
+/// Upload utilities
+
+function readBlob(opt_startByte, opt_stopByte) {
+
+    var files = document.getElementById('nesfile').files;
+    if (!files.length) {
+        alert('Please select a file!');
+        return;
+    }
+
+    var file = files[0];
+    var start = 0;
+    var stop = file.size - 1;
+
+    var reader = new FileReader();
+
+    // If we use onloadend, we need to check the readyState.
+    reader.onloadend = function(evt) {
+        
+        if (evt.target.readyState == FileReader.DONE) { // DONE == 2
+            spriteRomData = new Uint8Array(evt.target.result);
+            NEStoCanvas(spriteRomData);
+        }
+    };
+
+    var blob = file.slice(start, stop + 1);
+    reader.readAsArrayBuffer(blob);
+}
+
+
+/// Load up default sprite sheet
 
 var xhr = new XMLHttpRequest();
 xhr.open('GET', 'test.chr')

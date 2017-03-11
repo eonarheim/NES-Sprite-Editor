@@ -119,10 +119,21 @@
             </div>
             <input id="grid" type="checkbox">Show grid lines</input>
             <hr>
+            
+          
+
+            <label for="nesfile">Upload</label>
+            <input type="file" id="nesfile" name="nesfile" /> Read NES Sprite File 
+            <span class="readBytesButtons">
+            <button id="load">Load</button>
+            </span>
+
+            <label for="nesfilename">NES Sprite Name</label>
+            <input  id="nesfilename" type="text" />
             <button id="nes">Save NES</button>
+
             <button id="image">Save PNG</button>
             <button id="new">New sprite sheet</button>
-            <button id="upload">Upload sprite sheet</button>
             <hr>
             <pre>
                 $3F00	Universal background color
