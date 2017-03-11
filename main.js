@@ -88,18 +88,23 @@ for(var el of elements){
         }
 
         if(selectedColor && selectedPallete){
+            // save the current state of teh rom before switching palletes
+            spriteRomData = canvasToNES(imageData);
+
             var color = selectedColor.match(/(\d{1,3})\,\s*(\d{1,3})\,\s*(\d{1,3})/);
             pallete[selectedPallete].r = color[1];
             pallete[selectedPallete].g = color[2];
             pallete[selectedPallete].b = color[3];
             pallete[selectedPallete].nes = selectedNes;
-            
+
+            // draw the rom with the new pallet data
             NEStoCanvas(spriteRomData);
+            
             selectedColor = null;
             selectedNes = null;
         }
         updatePallet();
-        spriteRomData = canvasToNES(imageData);
+        //spriteRomData = canvasToNES(imageData);
         //evt.target.style.border = 'blue'
     });
 }
@@ -153,6 +158,11 @@ function getPixel(x, y, imageData) {
         g: imageData.data[canvasImageOffset + 1],
         b: imageData.data[canvasImageOffset + 2]
     };
+
+    if(!color){
+        throw new Error("Invalid pixel (" + x + ", " + y + ")");
+    }
+
     return color;
 }
 
@@ -171,7 +181,7 @@ document.getElementById('editor').addEventListener('mousemove', function(evt){
     var coords = getXY(evt);
     document.getElementById('coord').innerText = '(' + coords.x + ', ' + coords.y + ')';
     if(_isMouseDown){
-        draw(evt);
+        handleDrawTool(evt);
     }
 });
 document.getElementById('editor').addEventListener('mousedown', down)
@@ -185,22 +195,25 @@ function up() {
     
 }
 
-function draw(evt){
+function handleDrawTool(evt){
     var coords = getXY(evt);
     putPixel(coords.x, coords.y, pallete, selectedPallete, imageData);
-    NEStoCanvas(spriteRomData);
+    paintCanvas();
 }
 
-function NEStoCanvas(canvasData){
-     var byteArray = new Uint8Array(canvasData);
+function paintCanvas(){
+    spriteCtx.putImageData(imageData, 0, 0);
+    ctx.drawImage(spriteCanvas, 0, 0, width * scale, height * scale);
+}
 
-        // every sprite is 16 bytes
-        // 1 byte is 8 pixels 
-        // byte n and byte n+8 control the color of that pixel
-        //  (0,0) background
-        //  (1,0) color 1
-        //  (0,1) color 2
-        //  (1,1) color 3
+function NEStoCanvas(byteArray){
+    // every sprite is 16 bytes
+    // 1 byte is 8 pixels 
+    // byte n and byte n+8 control the color of that pixel
+    //  (0,0) background
+    //  (1,0) color 1
+    //  (0,1) color 2
+    //  (1,1) color 3
     for(var b = 0; b < byteArray.length; b+=16){
         ypos = Math.floor(b/height) * 8
         // draw sprite
@@ -219,13 +232,16 @@ function NEStoCanvas(canvasData){
         }        
         xpos = (xpos + 8) % width;
     }
-    spriteCtx.putImageData(imageData, 0, 0);
-    ctx.drawImage(spriteCanvas, 0, 0, width * scale, height * scale);
+    
+    paintCanvas();
 }
 
 
 
 function rgbColorToPalleteTuple(color, pallete) {
+    if(!color){
+        throw new Error("Invalid color for current pallete! - " + colorKey(color));
+    }
     function colorKey(color){
         return color.r + '+'+ color.g + '+' + color.b;
     }
@@ -233,9 +249,11 @@ function rgbColorToPalleteTuple(color, pallete) {
     palleteHash[colorKey(pallete.background)] = [0x0, 0x0];
     palleteHash[colorKey(pallete.color1)] = [0x1, 0x0];
     palleteHash[colorKey(pallete.color2)] = [0x0, 0x1];
-    palleteHash[colorKey(pallete.color3)] = [0x1, 0x1];   
+    palleteHash[colorKey(pallete.color3)] = [0x1, 0x1];
+
+    var result = palleteHash[colorKey(color)];
     
-    return palleteHash[colorKey(color)];
+    return result;
 }
 
 function canvasToNES(imageData){
@@ -292,7 +310,7 @@ function canvasToNES(imageData){
     // convert to a blob
     var blob = new Blob([byteArray], {type: 'octect/stream'});
     var url = window.URL.createObjectURL(blob);
-    return blob;
+    return byteArray;
 }
 
 var xpos = 0;
@@ -303,9 +321,9 @@ xhr.open('GET', 'test.chr')
 xhr.responseType = 'arraybuffer';
 
 xhr.addEventListener('load', function(evt){
-    spriteRomData = xhr.response;
+    spriteRomData = new Uint8Array(xhr.response);
+
     NEStoCanvas(spriteRomData);
-    canvasToNES(imageData);
 });
 
 xhr.send();
