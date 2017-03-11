@@ -37,7 +37,7 @@ var pallete = {
         r: 0, 
         g: 0,
         b: 0,
-        nes: '0x00'  
+        nes: '0x0F'  
     },
     color1 : { // rgb(248,56,0)
         r: 248,
@@ -161,6 +161,8 @@ function updatePallet(){
     setElementColor('color1', c1.r, c1.g, c1.b);
     setElementColor('color2', c2.r, c2.g, c2.b);
     setElementColor('color3', c3.r, c3.g, c3.b);
+
+    document.getElementById('current').textContent = 'Pallete String:' + [bgColor.nes, c1.nes, c2.nes, c3.nes].join(',').replace(/0x/g, '$');
 
     document.getElementById('brush').style.color = getWhiteOrBlack(pallete[selectedPallete]);
     document.getElementById('background').style.color = getWhiteOrBlack(bgColor);
