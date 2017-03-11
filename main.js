@@ -175,7 +175,7 @@ updatePallet();
 
 function getXY(evt){
     var x = Math.floor((evt.x - evt.target.offsetLeft) / scale);
-    var y = Math.floor((evt.y - evt.target.offsetTop) / scale);
+    var y = Math.floor((evt.y - evt.target.offsetTop + document.body.scrollTop) / scale);
     return {
         x: x,
         y: y
