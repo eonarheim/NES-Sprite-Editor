@@ -479,7 +479,7 @@ function readBlob(opt_startByte, opt_stopByte) {
 /// Load up default sprite sheet
 
 var xhr = new XMLHttpRequest();
-xhr.open('GET', 'test.chr')
+xhr.open('GET', 'main.chr')
 xhr.responseType = 'arraybuffer';
 
 xhr.addEventListener('load', function(evt){
