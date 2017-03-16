@@ -84,8 +84,8 @@ downloadNes.addEventListener('click', function(){
     download(name || 'sprite.chr', spriteRomData, 'octect/stream');
 });
 
-var uploadNes = document.getElementById('load')
-uploadNes.addEventListener('click', function(){
+var uploadNes = document.getElementById('nesfile')
+uploadNes.addEventListener('change', function(){
     readBlob()
 }, false);
 
