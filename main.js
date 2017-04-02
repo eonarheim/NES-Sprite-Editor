@@ -448,7 +448,7 @@ function download(filename, byteArray, type) {
 
 /// Upload utilities
 
-function readBlob(opt_startByte, opt_stopByte) {
+function readBlob() {
 
     var files = document.getElementById('nesfile').files;
     if (!files.length) {
