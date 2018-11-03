@@ -194,8 +194,10 @@ updatePallet();
 
 
 function getXY(evt){
+    // ref: https://stackoverflow.com/questions/28633221/document-body-scrolltop-firefox-returns-0-only-js
+    var scrollTop = window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop || 0
     var x = Math.floor((evt.x - evt.target.offsetLeft) / scale);
-    var y = Math.floor((evt.y - evt.target.offsetTop + document.body.scrollTop) / scale);
+    var y = Math.floor((evt.y - evt.target.offsetTop + scrollTop) / scale);
     return {
         x: x,
         y: y
