@@ -32,7 +32,7 @@ var data = imageData.data;
 
 var mapping = ['background', 'color1', 'color2', 'color3']
 
-var pallete = {
+var palette = {
     background : {
         r: 0, 
         g: 0,
@@ -62,7 +62,7 @@ var pallete = {
     }
 }
 
-var selectedPallete = 'background';
+var selectedPalette = 'background';
 var selectedColor = null;
 var selectedNes = null;
 
@@ -105,12 +105,12 @@ var grid = document.getElementById('grid');
 grid.addEventListener('change', toggleGrid);
 
 for(var el of elements){
-    el.addEventListener('mouseup', handlePalleteChange);
+    el.addEventListener('mouseup', handlePaletteChange);
 }
 
-function handlePalleteChange(evt){
-    if(evt.target.dataset.pallete){
-            selectedPallete = evt.target.dataset.pallete;
+function handlePaletteChange(evt){
+    if(evt.target.dataset.palette){
+            selectedPalette = evt.target.dataset.palette;
             
         }
 
@@ -119,15 +119,15 @@ function handlePalleteChange(evt){
             selectedNes = evt.target.dataset.nes;
         }
 
-        if(selectedColor && selectedPallete){
-            // save the current state of teh rom before switching palletes
+        if(selectedColor && selectedPalette){
+            // save the current state of teh rom before switching palettes
             spriteRomData = canvasToNES(imageData);
 
             var color = selectedColor.match(/(\d{1,3})\,\s*(\d{1,3})\,\s*(\d{1,3})/);
-            pallete[selectedPallete].r = color[1];
-            pallete[selectedPallete].g = color[2];
-            pallete[selectedPallete].b = color[3];
-            pallete[selectedPallete].nes = selectedNes;
+            palette[selectedPalette].r = color[1];
+            palette[selectedPalette].g = color[2];
+            palette[selectedPalette].b = color[3];
+            palette[selectedPalette].nes = selectedNes;
 
             // draw the rom with the new pallet data
             NEStoCanvas(spriteRomData);
@@ -141,19 +141,19 @@ function handlePalleteChange(evt){
 // Handle hotkeys
 window.addEventListener('keydown', function(evt){
     if(evt.keyCode == 49){
-        selectedPallete = 'background'
+        selectedPalette = 'background'
     }
 
     if(evt.keyCode == 50){
-        selectedPallete = 'color1'
+        selectedPalette = 'color1'
     }
 
     if(evt.keyCode == 51){
-        selectedPallete = 'color2'
+        selectedPalette = 'color2'
     }
     
     if(evt.keyCode == 52){
-        selectedPallete = 'color3'
+        selectedPalette = 'color3'
     }
     updatePallet();
 });
@@ -171,20 +171,20 @@ function getWhiteOrBlack(color){
 }
 
 function updatePallet(){
-    var bgColor = pallete.background;
-    var c1 = pallete.color1;
-    var c2 = pallete.color2;
-    var c3 = pallete.color3;
+    var bgColor = palette.background;
+    var c1 = palette.color1;
+    var c2 = palette.color2;
+    var c3 = palette.color3;
     
-    setElementColor('brush',  pallete[selectedPallete].r,  pallete[selectedPallete].g,  pallete[selectedPallete].b);
+    setElementColor('brush',  palette[selectedPalette].r,  palette[selectedPalette].g,  palette[selectedPalette].b);
     setElementColor('background', bgColor.r, bgColor.g, bgColor.b);
     setElementColor('color1', c1.r, c1.g, c1.b);
     setElementColor('color2', c2.r, c2.g, c2.b);
     setElementColor('color3', c3.r, c3.g, c3.b);
 
-    document.getElementById('current').textContent = 'Pallete String:' + [bgColor.nes, c1.nes, c2.nes, c3.nes].join(',').replace(/0x/g, '$');
+    document.getElementById('current').textContent = 'Palette String:' + [bgColor.nes, c1.nes, c2.nes, c3.nes].join(',').replace(/0x/g, '$');
 
-    document.getElementById('brush').style.color = getWhiteOrBlack(pallete[selectedPallete]);
+    document.getElementById('brush').style.color = getWhiteOrBlack(palette[selectedPalette]);
     document.getElementById('background').style.color = getWhiteOrBlack(bgColor);
     document.getElementById('color1').style.color = getWhiteOrBlack(c1);
     document.getElementById('color2').style.color = getWhiteOrBlack(c2);
@@ -236,15 +236,15 @@ function up(evt) {
 
 function handleDrawTool(evt){
     var coords = getXY(evt);
-    putPixel(coords.x, coords.y, pallete, selectedPallete, imageData);
+    putPixel(coords.x, coords.y, palette, selectedPalette, imageData);
     paintCanvas();
 }
 
 /// Drawing utilities
 
-function putPixel(x, y, pallete, palleteColor, imageData) {
+function putPixel(x, y, palette, paletteColor, imageData) {
     var canvasImageOffset = (x  + imageData.width * y) * 4;
-    var color = pallete[palleteColor];
+    var color = palette[paletteColor];
     imageData.data[canvasImageOffset + 0] = color.r;
     imageData.data[canvasImageOffset + 1] = color.g;
     imageData.data[canvasImageOffset + 2] = color.b;
@@ -316,20 +316,20 @@ function paintCanvas(){
 }
 
 
-function rgbColorToPalleteTuple(color, pallete) {
+function rgbColorToPaletteTuple(color, palette) {
     if(!color){
-        throw new Error("Invalid color for current pallete! - " + colorKey(color));
+        throw new Error("Invalid color for current palette! - " + colorKey(color));
     }
     function colorKey(color){
         return color.r + '+'+ color.g + '+' + color.b;
     }
-    var palleteHash = {};
-    palleteHash[colorKey(pallete.background)] = [0x0, 0x0];
-    palleteHash[colorKey(pallete.color1)] = [0x1, 0x0];
-    palleteHash[colorKey(pallete.color2)] = [0x0, 0x1];
-    palleteHash[colorKey(pallete.color3)] = [0x1, 0x1];
+    var paletteHash = {};
+    paletteHash[colorKey(palette.background)] = [0x0, 0x0];
+    paletteHash[colorKey(palette.color1)] = [0x1, 0x0];
+    paletteHash[colorKey(palette.color2)] = [0x0, 0x1];
+    paletteHash[colorKey(palette.color3)] = [0x1, 0x1];
 
-    var result = palleteHash[colorKey(color)];
+    var result = paletteHash[colorKey(color)];
     
     return result;
 }
@@ -359,7 +359,7 @@ function NEStoCanvas(byteArray){
 
                 var color = ((channel1 >>> j) & mask) + (((channel2 >>> j) & mask) << 1)
 
-                putPixel(xpos + (7 - j), ypos + i, pallete, mapping[color], imageData);
+                putPixel(xpos + (7 - j), ypos + i, palette, mapping[color], imageData);
             }            
         }        
         xpos = (xpos + 8) % width;
@@ -384,7 +384,7 @@ function canvasToNES(imageData){
             var color = getPixel(x, y, imageData);
 
             // find the pallet color
-            var palletTuple = rgbColorToPalleteTuple(color, pallete);
+            var palletTuple = rgbColorToPaletteTuple(color, palette);
 
             // write it to the tupleBuffer
             tupleBuffer[x + imageData.width * y] = palletTuple
